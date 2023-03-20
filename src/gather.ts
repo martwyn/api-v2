@@ -2,7 +2,6 @@ require("dotenv").config();
 
 import chunk from "lodash/chunk";
 import wait from "waait";
-import { absoluteSharesiesUrl } from "./browser/urls";
 import { contentExists, insertContent } from "./db";
 import { calculateEmbedding } from "./openai";
 import { getAllLearnUrlsAndSelectors } from "./scrape/learn";
@@ -12,19 +11,26 @@ import { pagesAndSelectors } from "./scrape/pages";
 import { getAllIntercomUrlsAndSelectors } from "./scrape/intercom";
 
 const goAndGatherAllTheData = async () => {
-  // const learnLinks = await getAllLearnUrlsAndSelectors();
-  // const blogLinks = await getAllBlogUrlsAndSelectors();
-  // const pageLinks = pagesAndSelectors;
+  const learnLinks = await getAllLearnUrlsAndSelectors();
+  const blogLinks = await getAllBlogUrlsAndSelectors();
+  const pageLinks = pagesAndSelectors;
   const intercomLinks = await getAllIntercomUrlsAndSelectors();
-  console.log(intercomLinks);
-  const linkChunks = chunk([...intercomLinks], 5);
+  const linkChunks = chunk(
+    [...learnLinks, ...blogLinks, ...pageLinks, ...intercomLinks],
+    5
+  );
 
   for (let i = 0; i < linkChunks.length; i++) {
     console.log("🗿 Iterating over chunk");
     const contentFromUrls = (
       await Promise.all(
         linkChunks[i].map((link) =>
-          getContentFromUrl(link.url, true, link.selector, link.elements || [])
+          getContentFromUrl({
+            url: link.url,
+            chunkOnHeaders: true,
+            selectors: link.selector,
+            elements: link.elements || [],
+          })
         )
       )
     ).flat();
@@ -43,8 +49,8 @@ const goAndGatherAllTheData = async () => {
   }
 };
 
-console.log("🤲 starting");
+console.log("🤲 Gathering starting");
 goAndGatherAllTheData().then(() => {
-  console.log("🤲 finished");
+  console.log("🤙 Gathering finished");
   process.exit();
 });

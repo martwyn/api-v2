@@ -1,5 +1,4 @@
 import { getBrowser } from "../browser";
-import { absoluteSharesiesUrl } from "../browser/urls";
 
 const headerEls: string[] = ["H1", "H2", "H3"];
 
@@ -8,12 +7,19 @@ type SourceContent = {
   source: string;
 };
 
-export const getContentFromUrl = async (
-  url: string,
-  chunkOnHeaders: boolean = true,
-  selectors: string[],
-  elements: string[]
-) => {
+type GetContentFromUrlOptions = {
+  url: string;
+  chunkOnHeaders: boolean;
+  selectors: string[];
+  elements: string[];
+};
+
+export const getContentFromUrl = async ({
+  url,
+  chunkOnHeaders,
+  selectors,
+  elements,
+}: GetContentFromUrlOptions) => {
   const browser = await getBrowser();
   const page = await browser.newPage();
   console.log("📃 Getting content from url", url);
@@ -48,6 +54,12 @@ export const getContentFromUrl = async (
             };
           });
 
+          // This attempts to be a teeny bit smart. If we are chunking on headers,
+          // this will try and get embedded content from one header to the next,
+          // unless the next element is also a header. It _should_ mean we have content
+          // chunked into semi standalone parts. Big assumption here though in that
+          // relevant content follows a heading.
+          // We also chunk when we get over 500 characters
           if (
             (headerEls.includes(tagName) &&
               chunkOnHeaders &&
@@ -78,4 +90,34 @@ export const getContentFromUrl = async (
         source: url,
       } as SourceContent)
   );
+};
+
+type GetLinksFromUrlOptions = {
+  url: string;
+  containerSelector: string;
+  anchorSelector: string;
+};
+
+export const getLinksFromUrl = async ({
+  url,
+  containerSelector,
+  anchorSelector,
+}: GetLinksFromUrlOptions) => {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+  console.log("🦄 Getting links from URL", url);
+  await page.goto(url, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(containerSelector);
+
+  const anchorHandles = await page.$$(anchorSelector);
+  const links = await Promise.all(
+    anchorHandles
+      .slice(1)
+      .map((handle) =>
+        page.evaluate((anchor) => anchor.getAttribute("href"), handle)
+      )
+  );
+
+  await page.close();
+  return links;
 };

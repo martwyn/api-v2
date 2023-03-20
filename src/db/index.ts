@@ -18,7 +18,7 @@ export const insertContent = async (
     .from("content")
     .insert({ content, source, embedding });
   if (response.error) {
-    console.error(response.error);
+    console.error("🥤 Error inserting content", response.error);
     return;
   }
   if (response.data) {
@@ -29,13 +29,13 @@ export const insertContent = async (
 export const contentExists = async (content: string) => {
   // Half assed "does it exist" check based on the first 100
   // characters of the content
-  console.log("👩🧦 Checking if exists");
+  console.log("🧦 Checking if exists");
   const { data, error } = await supabaseClient.rpc("existing_content", {
     existing_content: content.substring(0, 100),
   });
 
   if (error) {
-    console.error(error.code, error.message);
+    console.error("🪵 Error checking existence", error.code, error.message);
     throw new Error(error.message);
   }
 
@@ -46,12 +46,14 @@ export const matchEmbedding = async (embedding: number[]) => {
   console.log("👑 Matching related embeddings");
   const { data, error } = await supabaseClient.rpc("match_content", {
     query_embedding: embedding,
+    // I've got no real clue as to what the correct threshold is here.
+    // What is here currently is just a stab in the dark
     similarity_threshold: 0.8,
     match_count: 5,
   });
 
   if (error) {
-    console.error(error.code, error.message);
+    console.error("🐳 Error matching embedding", error.code, error.message);
     throw new Error(error.message);
   }
 

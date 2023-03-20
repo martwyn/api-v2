@@ -1,18 +1,15 @@
 export const sharesiesPrefix = "https://www.sharesies.nz";
-export const intercomPrefix = "https://intercom.help/sharesies/en/";
+export const intercomPrefix = "https://intercom.help/sharesies/en";
 
-export const absoluteSharesiesUrl = (url: string) => {
-  if (url.startsWith(sharesiesPrefix)) {
+const absoluteFromPrefix = (url: string, prefix: string) => {
+  if (url.startsWith(prefix)) {
     return url;
   }
 
-  return `${sharesiesPrefix}${url}`;
+  return `${prefix}${url}`;
 };
 
-export const absoluteIntercomUrl = (url: string) => {
-  if (url.startsWith(intercomPrefix)) {
-    return url;
-  }
-
-  return `${intercomPrefix}${url}`;
-};
+export const absoluteSharesiesUrl = (url: string) =>
+  absoluteFromPrefix(url, sharesiesPrefix);
+export const absoluteIntercomUrl = (url: string) =>
+  absoluteFromPrefix(url, intercomPrefix);
