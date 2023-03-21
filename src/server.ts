@@ -21,6 +21,11 @@ app.get("/search", async (req: Request, res: Response) => {
   res.json(searchAnswer);
 });
 
+app.get("/", async (_req: Request, res: Response) => {
+  // Simple health check
+  res.send("OK");
+});
+
 app.listen(port, () => {
   console.log(`🖥️ Server listening on port ${port}`);
 });
