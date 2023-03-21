@@ -24,6 +24,10 @@ SUPABASE_ANON_KEY="a.b.c-d-e"
 OPEN_AI_API_KEY="sk-xyz"
 ```
 
+## DB migration
+
+Inside the file `migrations/migration.sql` you'l find some SQL that you can copy into a PSQL shell or the Supabase UI etc to get the DB tables in the necessary state to store the content and related embeddings.
+
 # Commands
 
 ## Gather
@@ -42,7 +46,7 @@ With each piece of content that the embeddings are created for, we also store th
 
 ## Start server
 
-Running `yarn start` will expose an Express server on port 3001.
+Running `yarn dev` will expose an Express server on port 3001.
 
 There is a single endpoint which is accessible via `/search`. It takes two query parameters:
 
@@ -65,3 +69,4 @@ console.log(answer, sources)
 > "Hello! How can I assist you today?", []
 ```
 
+Note that if you want to run the JS version of this you'll want to run `yarn build` followed by `yarn start`.

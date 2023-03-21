@@ -6,7 +6,9 @@
   "scripts": {
     "gather": "ts-node ./src/gather.ts",
     "search": "ts-node ./src/search.ts",
-    "start": "ts-node ./src/server.ts",
+    "dev": "ts-node ./src/server.ts",
+    "build": "tsc",
+    "start": "node ./dist/server.js",
     "db-types": "npx --yes supabase gen types typescript --project-id 'tarycgnzkiwvumuksguw' --schema public > src/db/types.ts"
   },
   "dependencies": {
